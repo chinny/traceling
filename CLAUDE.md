@@ -22,7 +22,9 @@ The CLI (`cmd/traceling/`) is a thin Cobra shell. All logic lives in `internal/`
 
 ```
 internal/
-  render/     — PDF → *image.RGBA pages via MuPDF (go-fitz, purego — no cgo);
+  render/     — PDF → *image.RGBA pages via MuPDF (go-fitz; default cgo build
+                statically links the bundled MuPDF — with CGO_ENABLED=0 it
+                falls back to purego and dlopens a system libmupdf at runtime);
                 also reports page size in PDF points via Bound()
   lighten/    — tonal remap: grayscale conversion + LUT so black → grey level,
                 white → white, linear in between
@@ -41,3 +43,11 @@ internal/
   structural PDF bugs.
 
 **Module path:** `github.com/chinny/traceling`
+
+## Releases
+
+Push a `v*` tag → `.github/workflows/release.yml` builds native binaries on a
+runner matrix (linux amd64/arm64, darwin amd64/arm64, windows amd64) and
+publishes archives + checksums as a GitHub Release. Builds are native per
+platform because the cgo MuPDF link can't cross-compile without a matching
+C toolchain.

@@ -13,8 +13,10 @@ LDFLAGS := -s -w \
 
 all: build
 
-# go-fitz uses cgo (bundled MuPDF), so cross-compiling requires a matching
-# C cross-toolchain; build natively on each target platform.
+# go-fitz statically links its bundled MuPDF via cgo, so cross-compiling
+# requires a matching C cross-toolchain; build natively on each target
+# platform (see .github/workflows/release.yml). Building with CGO_ENABLED=0
+# falls back to purego, which dlopens a system libmupdf at runtime instead.
 build:
 	go build -ldflags "$(LDFLAGS)" -o bin/$(BINARY) $(PKG)
 
